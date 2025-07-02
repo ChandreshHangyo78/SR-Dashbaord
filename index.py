@@ -67,6 +67,11 @@ comparison_df['Date'] = pd.to_datetime(comparison_df['Date'])
 
 fig2, ax2 = plt.subplots(figsize=(18, 6))
 sns.barplot(data=comparison_df, x='Date', y='Sales', hue='Hub', ax=ax2)
+
+# Add data labels
+for container in ax2.containers:
+    ax2.bar_label(container, fmt='%.1f', label_type='edge', fontsize=8, padding=2)
+
 ax2.set_title("Daily Sales Comparison - Bar Chart")
 ax2.set_ylabel("Sales Realisation")
 ax2.set_xlabel("Date")
@@ -79,3 +84,32 @@ selected_hub = st.selectbox("Choose a Hub to inspect", hubs)
 hub_details = summary_df[summary_df['Hub Name'] == selected_hub].T
 hub_details.columns = [selected_hub]
 st.dataframe(hub_details.dropna())
+
+# Insights Section
+st.subheader("🔍 Key Insights")
+
+insight_points = []
+
+# Top-performing hub
+top_hub = summary_df.loc[summary_df['MTD SR'].idxmax(), 'Hub Name']
+top_value = summary_df['MTD SR'].max()
+insight_points.append(f"✅ **Top-performing hub**: `{top_hub}` with an MTD SR of `{top_value:.2f}`.")
+
+# Lowest-performing hub
+bottom_hub = summary_df.loc[summary_df['MTD SR'].idxmin(), 'Hub Name']
+bottom_value = summary_df['MTD SR'].min()
+insight_points.append(f"⚠️ **Lowest-performing hub**: `{bottom_hub}` with an MTD SR of `{bottom_value:.2f}`.")
+
+# Most consistent hub
+consistency = summary_df[date_cols].std(axis=1)
+most_consistent = summary_df.loc[consistency.idxmin(), 'Hub Name']
+insight_points.append(f"📉 **Most consistent sales trend** seen in `{most_consistent}` hub.")
+
+# Day with peak total sales
+total_by_day = summary_df[date_cols].sum()
+peak_day = total_by_day.idxmax()
+peak_value = total_by_day.max()
+insight_points.append(f"📅 **Peak sales day**: `{pd.to_datetime(peak_day).strftime('%B %d')}` with total SR of `{peak_value:.1f}`.")
+
+for point in insight_points:
+    st.markdown(point)
