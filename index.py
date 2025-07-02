@@ -90,26 +90,24 @@ st.subheader("🔍 Key Insights")
 
 insight_points = []
 
-# Top-performing hub
-top_hub = summary_df.loc[summary_df['MTD SR'].idxmax(), 'Hub Name']
-top_value = summary_df['MTD SR'].max()
-insight_points.append(f"✅ **Top-performing hub**: `{top_hub}` with an MTD SR of `{top_value:.2f}`.")
+# Top-performing hub by average SR
+top_hub_row = summary_df.loc[summary_df['MTD SR'].idxmax()]
+top_hub = top_hub_row['Hub Name']
+top_value = top_hub_row['MTD SR']
+insight_points.append(f"✅ **Top-performing hub** (by average SR): `{top_hub}` with MTD SR of `{top_value:.2f}`.")
 
-# Lowest-performing hub
-bottom_hub = summary_df.loc[summary_df['MTD SR'].idxmin(), 'Hub Name']
-bottom_value = summary_df['MTD SR'].min()
-insight_points.append(f"⚠️ **Lowest-performing hub**: `{bottom_hub}` with an MTD SR of `{bottom_value:.2f}`.")
+# Most consistent hub (lowest std dev across days)
+std_devs = summary_df[date_cols].std(axis=1)
+consistent_index = std_devs.idxmin()
+consistent_hub = summary_df.loc[consistent_index, 'Hub Name']
+insight_points.append(f"📉 **Most consistent performer**: `{consistent_hub}` (lowest fluctuation in daily SR values).")
 
-# Most consistent hub
-consistency = summary_df[date_cols].std(axis=1)
-most_consistent = summary_df.loc[consistency.idxmin(), 'Hub Name']
-insight_points.append(f"📉 **Most consistent sales trend** seen in `{most_consistent}` hub.")
-
-# Day with peak total sales
-total_by_day = summary_df[date_cols].sum()
-peak_day = total_by_day.idxmax()
-peak_value = total_by_day.max()
-insight_points.append(f"📅 **Peak sales day**: `{pd.to_datetime(peak_day).strftime('%B %d')}` with total SR of `{peak_value:.1f}`.")
+# Most productive day per hub
+for hub in selected_hubs:
+    row = summary_df[summary_df['Hub Name'] == hub]
+    max_day_col = row[date_cols].iloc[0].idxmax()
+    max_val = row[max_day_col].values[0]
+    insight_points.append(f"📌 **{hub}** had its highest SR of `{max_val:.2f}` on `{pd.to_datetime(max_day_col).strftime('%B %d')}`.")
 
 for point in insight_points:
     st.markdown(point)
