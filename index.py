@@ -7,7 +7,7 @@ import seaborn as sns
 @st.cache_data
 
 def load_data():
-    xls = pd.ExcelFile(r"C:\Users\DELL\Desktop\Dinesh Sir Visual Work\Sales Realization Report-Jun'25.xlsx")
+    xls = pd.ExcelFile("Sales Realization Report-Jun'25.xlsx")
     summary_df = xls.parse('Sales Realisation Summary')
     hub_wise_df = xls.parse('Hub Wise Sales Realisation', skiprows=1)
     return summary_df, hub_wise_df
