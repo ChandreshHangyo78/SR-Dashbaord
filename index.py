@@ -42,16 +42,19 @@ trend_df.index = pd.to_datetime(trend_df.index)
 # Drop days where all selected hubs have zero SR
 non_zero_days = trend_df[(trend_df != 0).any(axis=1)]
 
-fig, ax = plt.subplots(figsize=(16, 8))
+fig, ax = plt.subplots(figsize=(18, 6))
 for hub in non_zero_days.columns:
     ax.plot(non_zero_days.index, non_zero_days[hub], marker='o', label=hub)
     for x, y in zip(non_zero_days.index, non_zero_days[hub]):
-        ax.annotate(f"{x.strftime('%b-%d')}", xy=(x, y), textcoords="offset points", xytext=(0,5), ha='center', fontsize=8)
+        if y != 0:
+            label = f"{x.strftime('%b-%d')}\n{y:.1f}"
+            ax.annotate(label, xy=(x, y), textcoords="offset points", xytext=(0,10), ha='center', fontsize=8)
 
 ax.set_title("Full Daily SR Trends")
 ax.set_ylabel("Sales Realisation")
 ax.set_xlabel("Date")
 ax.legend()
+fig.autofmt_xdate()
 st.pyplot(fig)
 
 # Detail check per hub
