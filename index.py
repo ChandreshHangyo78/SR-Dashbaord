@@ -57,6 +57,22 @@ ax.legend()
 fig.autofmt_xdate()
 st.pyplot(fig)
 
+# Comparison Section
+st.subheader("Day-wise Sales Comparison by Hub")
+comparison_df = filtered_df.set_index('Hub Name')[date_cols].transpose().reset_index()
+comparison_df = comparison_df.melt(id_vars='index', var_name='Hub', value_name='Sales')
+comparison_df = comparison_df[comparison_df['Sales'] > 0]
+comparison_df.rename(columns={'index': 'Date'}, inplace=True)
+comparison_df['Date'] = pd.to_datetime(comparison_df['Date'])
+
+fig2, ax2 = plt.subplots(figsize=(18, 6))
+sns.barplot(data=comparison_df, x='Date', y='Sales', hue='Hub', ax=ax2)
+ax2.set_title("Daily Sales Comparison - Bar Chart")
+ax2.set_ylabel("Sales Realisation")
+ax2.set_xlabel("Date")
+fig2.autofmt_xdate()
+st.pyplot(fig2)
+
 # Detail check per hub
 st.subheader("Detailed Hub-wise Data View")
 selected_hub = st.selectbox("Choose a Hub to inspect", hubs)
